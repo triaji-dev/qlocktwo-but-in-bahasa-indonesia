@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Qlocktwo - Bahasa Indonesia</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="container"></div>
+    <script type="module">
+      import { displayCharacters } from './const.js';
+
+      function createLetterGrid() {
+        const container = document.querySelector('.container');
+        const GRID_SIZE = 12; // 12x12 grid
+        const totalDivs = GRID_SIZE * GRID_SIZE; // 144 divs
+
+        // Clear existing divs first
+        container.innerHTML = '';
+
+        // Create exactly 144 letter divs
+        for (let i = 0; i < totalDivs; i++) {
+          const letterDiv = document.createElement('div');
+          letterDiv.className = 'letter';
+          container.appendChild(letterDiv);
+        }
+
+        return document.querySelectorAll('.letter');
+      }
+
+      function populateLetters() {
+        // Get existing divs or create them if they don't exist
+        let letterDivs = document.querySelectorAll('.letter');
+
+        if (letterDivs.length === 0) {
+          letterDivs = createLetterGrid();
+        }
+
+        let letterIndex = 0;
+
+        // Loop through each row in displayCharacters (should be 12 rows)
+        for (let rowIndex = 0; rowIndex < 12; rowIndex++) {
+          const row = displayCharacters[rowIndex] || []; // Use empty array if row doesn't exist
+
+          // Loop through each column (should be 12 columns)
+          for (let colIndex = 0; colIndex < 12; colIndex++) {
+            if (letterIndex < letterDivs.length) {
+              const char = row[colIndex] || '0'; // Use '0' if character doesn't exist
+              // Display character, or leave empty if it's '0'
+              letterDivs[letterIndex].textContent = char;
+              letterIndex++;
+            }
+          }
+        }
+      }
+
+      function highlightWords() {
+        const letterDivs = document.querySelectorAll('.letter');
+
+        // Define word positions (row, start column, length)
+        const wordsToHighlight = [
+          // JAM (row 0, columns 0-2)
+          { row: 0, start: 0, length: 3 },
+          // SATU (row 1, columns 0-3)
+          { row: 1, start: 0, length: 4 },
+          // SIANG (row 7, columns 6-10)
+          { row: 7, start: 6, length: 5 },
+          // LIMA (row 10, columns 9-11)
+          { row: 10, start: 8, length: 4 },
+          // BELAS (row 11, columns 0-4)
+          { row: 11, start: 0, length: 5 },
+          // MENIT (row 11, columns 6-10)
+          { row: 11, start: 6, length: 5 },
+        ];
+
+        // Clear all active classes first
+        letterDivs.forEach(div => div.classList.remove('active'));
+
+        // Highlight specified words
+        wordsToHighlight.forEach(word => {
+          for (let i = 0; i < word.length; i++) {
+            const position = word.row * 12 + word.start + i;
+            if (position < letterDivs.length) {
+              letterDivs[position].classList.add('active');
+            }
+          }
+        });
+      }
+
+      function initializeWordClock() {
+        createLetterGrid();
+        populateLetters();
+        highlightWords(); // Activate the words after populating
+      }
+
+      // Simplified initialization - only run once
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initializeWordClock);
+      } else {
+        initializeWordClock();
+      }
+    </script>
+  </body>
+</html>
